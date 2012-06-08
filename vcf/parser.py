@@ -101,7 +101,7 @@ class _vcf_metadata_parser(object):
             Type=(?P<type>.+),
             Description="(?P<desc>.*)"
             >''', re.VERBOSE)
-        self.meta_pattern = re.compile(r'''##(?P<key>.+)=(?P<val>.+)''')
+        self.meta_pattern = re.compile(r'''##(?P<key>.+?)=(?P<val>.+)''')
 
     def vcf_field_count(self, num_str):
         if num_str == '.':
@@ -379,7 +379,7 @@ class _Record(object):
            NOTE 2: Denominator calc'ed from _called_ genotypes.
         """
         # skip if more than one alternate allele. assumes bi-allelic
-        if len(self.ALT) > 1:
+        if len(self.ALT) > 1 or self.num_called == 0:
             return None
         hom_ref = self.num_hom_ref
         het = self.num_het
