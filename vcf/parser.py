@@ -6,6 +6,7 @@ import itertools
 import os
 import re
 import sys
+import pdb
 
 try:
     from collections import OrderedDict
@@ -157,11 +158,17 @@ class _vcf_metadata_parser(object):
     def read_meta_hash(self, meta_string):
         items = re.split("[<>]", meta_string)
         # Removing initial hash marks and final equal sign
-        key = items[0][2:-1]
-        hashItems = items[1].split(',')
-        val = dict(item.split("=") for item in hashItems)
-        return key, val
-
+        #key = items[0][2:-1]
+        key=items[0][2:-1]
+        
+        hashItems = items[1].split(',',1)
+        val = dict(item.split("=",1) for item in hashItems)
+        new_val=",".join(items[1:-1])
+        new_val="<"+new_val+">"
+        #pdb.set_trace()
+        #return key, val
+        return key, new_val
+    
     def read_meta(self, meta_string):
         if re.match("##.+=<", meta_string):
             return self.read_meta_hash(meta_string)
@@ -516,19 +523,23 @@ class Writer(object):
     # Reverse keys and values in header field count dictionary
     counts = dict((v,k) for k,v in field_counts.iteritems())
 
-    def __init__(self, stream, template, eol=os.linesep):
-        self.writer = csv.writer(stream, delimiter="\t", lineterminator=eol)
+    def __init__(self, stream, template, lineterminator="\r\n"):
+        self.writer = csv.writer(stream, delimiter="\t", lineterminator=lineterminator)
         self.template = template
         self.stream = stream
-
+        
         two = '##{key}=<ID={0},Description="{1}">\n'
         four = '##{key}=<ID={0},Number={num},Type={2},Description="{3}">\n'
         _num = self._fix_field_count
         for (key, vals) in template.metadata.iteritems():
+            
             if key in SINGULAR_METADATA:
                 vals = [vals]
             for val in vals:
+                #pdb.set_trace()
+                
                 stream.write('##{0}={1}\n'.format(key, val))
+                #stream.write('##<'+key+">=<"+val+">\n")
         for line in template.infos.itervalues():
             stream.write(four.format(key="INFO", *line, num=_num(line.num)))
         for line in template.formats.itervalues():
