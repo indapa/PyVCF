@@ -22,7 +22,14 @@ def main():
     args=parser.parse_args()
     
     pedigree_basename=return_file_basename(args.pedfile)
-    vcf_basename = return_file_basename(return_file_basename(args.vcfile))
+    
+    vcfroot, ext = os.path.splitext(args.vcfile)
+    if ext == '.gz':
+        vcf_basename = return_file_basename(return_file_basename(args.vcfile))
+    else:
+        vcf_basename = return_file_basename(args.vcfile)
+        
+        
     
     
     outfile=".".join([vcf_basename, pedigree_basename,'vcf'])
