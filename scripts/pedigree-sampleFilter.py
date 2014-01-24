@@ -40,7 +40,7 @@ def main():
     keepstring=",".join(keepList)
 
 
-    sf = SampleFilter(infile=args.vcfile, outfile=outfile, filters=keepstring, invert=True)
+    sf = SampleFilter(infile=args.vcfile, outfile=sys.stdout, filters=keepstring, invert=True)
     
 
 if __name__ == "__main__":
