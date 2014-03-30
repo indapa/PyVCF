@@ -9,7 +9,7 @@ import argparse
 
 
 def main():
-    """ Perform sample filtering based based on samples read from a *.ped file and *.vcf.gz file """
+    """ Perform sample filtering based based on samples read from a file (each samplename on seperate line) """
     usage = "usage: %prog [options]"
     parser = argparse.ArgumentParser(description='Given a gzipped vcf file and pedigree file, generate a new vcf with samples either kept/removed from LIST ')
     
