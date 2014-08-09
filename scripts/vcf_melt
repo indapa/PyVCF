@@ -19,6 +19,7 @@ else:
 reader = vcf.VCFReader(inp)
 
 formats = reader.formats.keys()
+#print formats
 infos = reader.infos.keys()
 
 header = ["SAMPLE"] + formats + ['FILTER', 'CHROM', 'POS', 'REF', 'ALT', 'ID'] \
@@ -36,10 +37,21 @@ def flatten(x):
 for record in reader:
     info_row = [flatten(record.INFO.get(x, None)) for x in infos]
     fixed = [record.CHROM, record.POS, record.REF, record.ALT, record.ID]
+    out.writerow(fixed)
+    continue
 
-    for sample in record.samples:
+for sample in record.samples:
+
+
+        #sample.data is a namedtuple so convert to dict
+        #see this http://www.gossamer-threads.com/lists/python/python/1086055#1086055
+
+        sampledict= dict((s, getattr(sample.data, s)) for s in sample.data._fields)
         row = [sample.sample]
-        row += [flatten(sample.data.get(x, None)) for x in formats]
+
+
+        row += [flatten(sampledict.get(x, None)) for x in formats]
+
         row += [record.FILTER or '.']
         row += fixed
         row += info_row
